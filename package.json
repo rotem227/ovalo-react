@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Rotem Ben Itzhak",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ovalo": "^1.0.7"
+  }
 }

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 
-import Store from './index';
+import Store from 'ovalo';
 
 export default function useSegment( key, group ) {
     const { state: initialState, dispatch, actions, register } = Store.useSegment( key, group );

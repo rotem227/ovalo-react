@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
-import Segments from './index';
+import Segments from 'ovalo';
 
 export default function useInitSegments( config, group ) {
     const segments = useMemo( () => Segments.init( config, group ), [] );

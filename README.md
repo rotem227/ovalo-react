@@ -20,9 +20,9 @@ Installation
 Usage
 -------------
 
-## Basic State
+## Initial State
 
-The basic concept of the library is to define 'segments' data, which is basically an object that holds the app state and actions.
+The basic concept of the library is to define 'segments' data, which is basically an object that holds the app state.
 
 ### Creating segments data:
 
@@ -85,6 +85,93 @@ export default function Counter() {
 ```
 Each `<button>` click dispatches a state update, which makes the state value to be increased/decreased by 1.
 
+## Dispatch Async
+
+The dispatch function supports async state updates by passing a function that returns a Promise.
+Once the Promise is resolved, the state will be updated.
+
+Example of a `Counter.jsx` component file:
+
+```javascript
+import React from 'react';
+
+import { useSegment } from "ovalo-react";
+
+export default function Counter() {
+  const { state, dispatch } = useSegment( 'counter' );
+
+  return (
+    <div>
+      <button
+        onClick={ () => dispatch( ( prevState ) => {
+            return new Promise( ( res ) => {
+                setTimeout( () => res( --prevState ), 2000 );
+            } );
+        } ) }
+      >-</button>
+
+      <span> { state } </span>
+
+      <button
+        onClick={ () => dispatch( ( prevState ) => {
+            return new Promise( ( res ) => {
+                setTimeout( () => res( ++prevState ), 2000 );
+            } );
+        } ) }
+      >+</button>
+    </div>
+  );
+}
+```
+Each `<button>` click dispatches an async state update, which makes the state value to be increased/decreased by 1 after 2 seconds.
+
+## Dispatch Sequence
+
+The dispatch function supports an array of multiple state updates that run in a sequence.
+It can be useful when a certain state update depends on a prior one to be fulfilled.
+For example: waiting for an API request and updating a different state only once the API request is fulfilled.
+
+Example of a `Counter.jsx` component file:
+
+```javascript
+import React from 'react';
+
+import { useSegment } from "ovalo-react";
+
+export default function Counter() {
+  const { state, dispatch } = useSegment( 'counter' );
+
+  const action1 = ( prevState ) => new Promise( ( res ) => {
+      setTimeout( () => res( prevState - 10 ), 2000 );
+  } );
+
+  const action2 = ( prevState ) => new Promise( ( res ) => {
+      setTimeout( () => res( prevState - 20 ), 3000 );
+  } );
+
+  const sequence = [ action1, action2 ];
+
+  return (
+    <div>
+      <button
+        onClick={ () => dispatch( sequence ) }
+      >-</button>
+
+      <span> { state } </span>
+
+      <button
+        onClick={ () => dispatch( ( prevState ) => {
+            return new Promise( ( res ) => {
+                setTimeout( () => res( ++prevState ), 2000 );
+            } );
+        } ) }
+      >+</button>
+    </div>
+  );
+}
+```
+When clicking the `-` button, the state will be decreased by 10 within 2 seconds, and afterward will be reduced by 20 after 3 seconds (from the moment that the previous action was fulfilled).
+
 ## Actions
 
 In addition to the state, the 'counter' segment can also hold pre-defined actions that can manipulate the state data:
@@ -121,7 +208,7 @@ export default function App() {
 
 ## Dispatch Actions
 
-In addition to the state, the 'counter' segment can also hold pre-defined actions that can manipulate the state data.
+In addition to the state, the 'counter' segment can also hold a pre-defined actions that can manipulate the state data.
 
 The actions can also be destructured from the `useSegment` hook.
 
@@ -209,22 +296,93 @@ export default function Counter() {
   return (
     <div>
       <button
-        onClick={ () => dispatch( add( 3 ) ) }
+        onClick={ () => dispatch( reduce( 2 ) ) }
       >-</button>
 
       <span> {state} </span>
 
       <button
-        onClick={ () => dispatch( reduce( 2 ) ) }
+        onClick={ () => dispatch( add( 3 ) ) }
       >+</button>
     </div>
   );
 }
 ```
-
 Each click on the `+` button will increase the state value by 3, while each click on the `-` button will decrease the value by 2.
 
+## Dispatch Async Actions
 
+In some cases, actions might need to perform an async state updates.
+The actions functions can return a Promise, that will update the state value once it's resolved.
+
+Example of `App.jsx` file:
+
+```javascript
+import React from 'react';
+
+import { useInitSegments } from 'ovalo-react';
+
+import Counter from './Counter';
+
+const segments = {
+  counter: {
+    state: 0,
+    actions: {
+        add: ( number ) => ( prevState ) => {
+            return new Promise( ( res ) => {
+                setTimeout( () => res( prevState + number ), 2000 );
+            } );
+        },
+        reduce: ( number ) => ( prevState ) => {
+            return new Promise( ( res ) => {
+                setTimeout( () => res( prevState - number ), 1000 );
+            } );
+        },
+    },
+  },
+};
+
+export default function App() {
+  useInitSegments( segments );
+
+  return (
+    <div className="App">
+      <Counter />
+    </div>
+  )
+}
+```
+By disptaching the `add` action, the state will be changes after 2 seconds, while when dispatching the `reduce`
+action the state will be changed after 1 second.
+
+Example of a `Counter.jsx` component file:
+
+```javascript
+import React from 'react';
+
+import { useSegment } from "ovalo-react";
+
+export default function Counter() {
+  const { state, dispatch, actions } = useSegment( 'counter' );
+  
+  const { add, reduce } = actions;
+
+  return (
+    <div>
+      <button
+        onClick={ () => dispatch( reduce( 2 ) ) }
+      >-</button>
+
+      <span> {state} </span>
+
+      <button
+        onClick={ () => dispatch( add( 3 ) ) }
+      >+</button>
+    </div>
+  );
+}
+```
+There is no change in terms of the async actions dispatch, the state will be increased after 2 seconds and will be decreased after 1 second.
 
 
 

@@ -24,7 +24,7 @@ Usage
 
 The basic concept of the library is to define 'segments' data, which is basically an object that holds the app state.
 
-### Creating segments data:
+**Creating segments data:**
 
 The segments data is the initial state of the app.
 
@@ -385,8 +385,11 @@ There is no change in terms of the async actions dispatch, the state will be inc
 ## Dispatch Without Re-render The Existing Component
 
 In some cases, a certain component should just update the state without consuming it.
+
 When implementing the `useSegment` hook, each dispatch will re-render the existing component because it's bound to the segment state.
+
 Therefore, in order to prevent the existing component re-renders when a state update should be dispatch without consuming the state, use the `useDispatch` hook instead of the `useSegment` hook.
+
 The `useDispatch` hook, holds the dispatch function and the actions object, but does not hold the state, and therefore will not trigger a re-render on each dispatch.
 
 Example of an external `Footer.jsx` component file:
@@ -413,6 +416,111 @@ export default function Footer() {
 ```
 The footer component can affect the 'counter' state without being re-render on each dispatch, due to not consuming the state and using the `useDispatch` hook, instead of the `useSegment` hook.
 
+## Groups
 
+The segments data can be configured as multiple groups that manage their state separately.
 
+This can be useful when working with multiple apps that needs to share the same global state, but still manage their own state in a separated scope.
+
+The `useInitSegments` hook can get a second argument that defines each group name.
+
+Example of `App.jsx` file:
+
+```javascript
+import React from 'react';
+
+import { useInitSegments } from 'ovalo-react';
+
+import Counter from './Counter';
+import Footer from './Footer';
+
+const mainSegments = {
+  counter: {
+    state: 0,
+  },
+};
+
+const footerSegments = {
+  counter: {
+    state: 0,
+  },
+};
+
+export default function App() {
+  useInitSegments( mainSegments, 'main' );
+
+  useInitSegments( footerSegments, 'footer' );
+
+  return (
+    <div className="App">
+      <Counter />
+
+      <Footer />
+    </div>
+  )
+}
+```
+
+## Working With Groups
+
+By defining multiple segments groups ('main' and 'footer') each segment state will be managed separately.
+Meaning, each state update of the 'main' group counter, will not affect the 'footer' group counter.
+
+Example of a `Counter.jsx` component file:
+
+```javascript
+import React from 'react';
+
+import { useSegment } from "ovalo-react";
+
+export default function Counter() {
+  const { state, dispatch } = useSegment( 'counter', 'main' );
+
+  return (
+    <div>
+      <h3>Counter Component:</h3>
+      
+      <button
+        onClick={ () => dispatch( ( prevState ) => --prevState ) }
+      >-</button>
+
+      <span> { state } </span>
+
+      <button
+        onClick={ () => dispatch( ( prevState ) => ++prevState ) }
+      >+</button>
+    </div>
+  );
+}
+```
+The state will be updated only in the `Counter` component, without affect the `Footer` component (see below).
+
+Example of a `Footer.jsx` component file:
+
+```javascript
+import React from 'react';
+
+import { useSegment } from "ovalo-react";
+
+export default function Footer() {
+  const { state, dispatch } = useSegment( 'counter', 'footer' );
+
+  return (
+    <div>
+      <h3>Footer Component:</h3>
+      
+      <button
+        onClick={ () => dispatch( ( prevState ) => --prevState ) }
+      >-</button>
+
+      <span> { state } </span>
+
+      <button
+        onClick={ () => dispatch( ( prevState ) => ++prevState ) }
+      >+</button>
+    </div>
+  );
+}
+```
+The state will be updated only in the `Footer` component, without affect the `Counter` component.
 

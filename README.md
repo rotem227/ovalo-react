@@ -174,7 +174,7 @@ When clicking the `-` button, the state will be decreased by 10 within 2 seconds
 
 ## Actions
 
-In addition to the state, the 'counter' segment can also hold pre-defined actions that can manipulate the state data:
+In addition to the state, the 'counter' segment can also hold pre-defined actions that can manipulate the state data (the actions has the same capabilities as to whatever is passed to the dispatch function).
 
 Example of `App.jsx` file:
 
@@ -208,9 +208,7 @@ export default function App() {
 
 ## Dispatch Actions
 
-In addition to the state, the 'counter' segment can also hold a pre-defined actions that can manipulate the state data.
-
-The actions can also be destructured from the `useSegment` hook.
+In order to dispatch the actions, they should be destructured from the `useSegment` hook, and should be passed as the dispatch function argument.
 
 Example of a `Counter.jsx` component file:
 
@@ -383,6 +381,37 @@ export default function Counter() {
 }
 ```
 There is no change in terms of the async actions dispatch, the state will be increased after 2 seconds and will be decreased after 1 second.
+
+## Dispatch Without Re-render The Existing Component
+
+In some cases, a certain component should just update the state without consuming it.
+When implementing the `useSegment` hook, each dispatch will re-render the existing component because it's bound to the segment state.
+Therefore, in order to prevent the existing component re-renders when a state update should be dispatch without consuming the state, use the `useDispatch` hook instead of the `useSegment` hook.
+The `useDispatch` hook, holds the dispatch function and the actions object, but does not hold the state, and therefore will not trigger a re-render on each dispatch.
+
+Example of an external `Footer.jsx` component file:
+
+```javascript
+import React from 'react';
+
+import { useDispatch } from "ovalo-react";
+
+export default function Footer() {
+  const { dispatch, actions } = useDispatch( 'counter' );
+  
+  const { add, reduce } = actions;
+
+  return (
+    <div>
+      <h3>Footer Component That Will Not Be Re-rendered:</h3>
+
+      <button onClick={ () => dispatch( add( 5 ) ) }>ADD FROM FOOTER</button>
+      <button onClick={ () => dispatch( reduce( 5 ) ) }>REDUCE FROM FOOTER</button>
+    </div>
+  );
+}
+```
+The footer component can affect the 'counter' state without being re-render on each dispatch, due to not consuming the state and using the `useDispatch` hook, instead of the `useSegment` hook.
 
 
 

@@ -29,16 +29,36 @@ const segments = {
   },
 };
 ```
-- Initializing the segments data: `useInitSegments( segments );`
-- Consume a segment state data: `const { state, dispatch } = useSegment( 'counter' );`
-- Dispatch a state change: `dispatch( ( prevState ) => prevState + 1 );`
+- Initializing the segments data:
+```javascript
+useInitSegments( segments );
+```
+- Consume a segment state data:
+```javascript
+const { state, dispatch } = useSegment( 'counter' );
+```
+- Dispatch a state change:
+```javascript
+dispatch( ( prevState ) => prevState + 1 );
+```
 - Dispatch an async state change:
 ```javascript
 dispatch( ( prevState ) => new Promise( ( res ) => {
     setTimeout( () => res( prevState + 5 ), 2000 );
 } ) );
 ```
-- Dispatch a sequence (gradually executed): `dispatch( [ ( prevState ) => { }, ( prevState ) => { } ] );`
+- Dispatch a sequence (gradually executed):
+```javascript
+const action1 = ( prevState ) => new Promise( ( resolve ) => {
+    setTimeout( () => resolve( prevState - 10 ), 2000 );
+} );
+
+const action2 = ( prevState ) => new Promise( ( resolve ) => {
+    setTimeout( () => resolve( prevState - 20 ), 3000 );
+} );
+
+dispatch( [ action1, action2 ] );
+```
 - Actions that can be executed by the dispatch function:
 ```javascript
 const segments = {
@@ -51,8 +71,14 @@ const segments = {
   },
 };
 ```
-- Consume actions in the component: `const { state, dispatch, actions } = useSegment( 'counter' );`
-- Dispatch actions: `dispatch( actions.add );`;
+- Consume actions in the component:
+```javascript
+const { state, dispatch, actions } = useSegment( 'counter' );
+```
+- Dispatch actions:
+```javascript
+dispatch( actions.add );
+```
 - Define actions with dynamic values: 
 ```javascript
 const segments = {
@@ -65,22 +91,31 @@ const segments = {
   },
 };
 ```
-- Dispatch actions with dynamic values: `dispatch( actions.add( 3 ) );`
-- Dispatch without re-render the existing component by using `useDispatch` hook instead of the `useSegment` hook: `const { dispatch, actions } = useDispatch( 'counter' );`
+- Dispatch actions with dynamic values:
+```javascript
+dispatch( actions.add( 3 ) );
+```
+- Dispatch without re-render the existing component by using `useDispatch` hook instead of the `useSegment` hook:
+```javascript
+const { dispatch, actions } = useDispatch( 'counter' );
+```
 - Initializing segments groups:
 ```javascript
 useInitSegments( mainSegments, 'main' );
 useInitSegments( footerSegments, 'footer' );
 ```
 - The state structure can be either a primitive, array or an object.
-- Consuming a segment from group: `const { state, dispatch, actions } = useSegment( 'counter', 'main' );`
+- Consuming a segment from group:
+```javascript
+const { state, dispatch, actions } = useSegment( 'counter', 'main' );
+```
 - The segments state can be exposed in the 'window' level.
 - Initializing the semgnets data can be done even before the app is loaded.
 
-Usage
+Usage With Examples
 -------------
 
-## Initial State
+## Initialize The Segments State
 
 The basic concept of the library is to define 'segments' data, which is basically an object that holds the app state.
 

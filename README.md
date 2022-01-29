@@ -17,6 +17,11 @@ Installation
 
 `npm i ovalo-react`
 
+Table of Contents
+-------------
+
+[TOCM]
+
 Usage
 -------------
 

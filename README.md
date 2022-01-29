@@ -532,7 +532,7 @@ export default function Footer() {
 ```
 The state will be updated only in the `Footer` component, without affect the `Counter` component.
 
-## Exposing The Segments State In The 'Window' Level
+## Exposing The Segments State To The 'Window' Level
 
 The segments state can be exposed in the 'window' level, so that external an external source can affect the app state.
 
@@ -578,7 +578,7 @@ Using the segments in the 'window' level is almost the same as using the `useSeg
 
 Instead of working with the `useSegment` hook, in the window ou should be using: `segments.use`.
 
-**Noe:** Dispatching actions will be done in the exact same way as in the react environment.
+**Note:** Dispatching actions will be done in the exact same way as in the react environment.
 
 ```javascript
 const { dispatch, actions } = segments.use( 'counter' );
@@ -597,7 +597,9 @@ setTimeout( () => {
 
 Instead of the `state` value, the `segment.use` expose only the initial state value.
 
-Due to not being in a react environment (in the 'window' level), the state is not being updated automatically, and therefore there is no meaning for getting the `state` from the semgnet:
+Due to not being in a react environment (when working in the 'window' level), the state is not being updated automatically, and therefore there is no meaning for getting the `state` from the semgnet.
+
+The only data that is available and related to the state is the initial value, that can also be deconstructed:
 
 ```javascript
 const { initial, dispatch, actions } = segments.use( 'counter' );
@@ -605,9 +607,10 @@ const { initial, dispatch, actions } = segments.use( 'counter' );
 console.log( 'Initial state value that will not be updated on state changes: ', initial );
 ```
 
-The updated state value will be consumed differently from the react environement:
+In order to get the updated state value will be consumed differently from the react environement:
 
 Deconstruct `register' and declare a function that will be triggered on each state change, and will get the current state value as its argument:
+
 ```javascript
 const { dispatch, actions, register } = segments.use( 'counter' );
 
@@ -621,6 +624,41 @@ dispatch( add ); // Changing the state will trigger the registered onStateChange
 ```
 
 **For more information on how to work with the ovalo global state, outsite of the react environment, see the following documentation:**
+
+## Initializing Segments Data Before The App Is Loaded
+
+The segments data can also be initialized before the app is loaded by importing `Segments` from the library.
+
+The segments data can be initialized before the app is injected to the DOM, or even by any other source that is external to the app.
+
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+
+import Segments from 'ovalo-react';
+
+const initialSegments = {
+  counter: {
+    state: 0,
+    actions: {
+        add: ( prevState ) => ++prevState,
+        reduce: ( prevState ) => --prevState,
+    },
+  },
+};
+
+Segments.init( initialSegments );
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+)
+```
+**Note:** There is no differnce in terms of using the state inside the components.
+
+
 
 
 

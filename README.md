@@ -99,12 +99,12 @@ dispatch( actions.add( 3 ) );
 ```javascript
 const { dispatch, actions } = useDispatch( 'counter' );
 ```
+- The state structure can be either a primitive, array or an object.
 - Initializing segments groups:
 ```javascript
 useInitSegments( mainSegments, 'main' );
 useInitSegments( footerSegments, 'footer' );
 ```
-- The state structure can be either a primitive, array or an object.
 - Consuming a segment from group:
 ```javascript
 const { state, dispatch, actions } = useSegment( 'counter', 'main' );

@@ -17,10 +17,57 @@ Installation
 
 `npm i ovalo-react`
 
-Table of Contents
+Sneak Peek
 -------------
 
-[TOCM]
+- Segments holds the app global state data.
+- Segments data structure:
+```javascript
+const segments = {
+  counter: {
+    state: 0,
+  },
+};
+```
+- Initializing the segments data: `useInitSegments( segments );`
+- Consume a segment state data: `const { state, dispatch } = useSegment( 'counter' );`
+- Dispatch a state change: `dispatch( ( prevState ) => prevState + 1 );`
+- Dispatch an async state change: `dispatch( ( prevState ) => new Promise( ( res ) => res( prevState + 1 ) ) );`
+- Dispatch a sequence (gradually executed): `dispatch( [ ( prevState ) => { }, ( prevState ) => { } ] );`
+- Actions that can be executed by the dispatch function:
+```javascript
+const segments = {
+  counter: {
+    state: 0,
+    actions: {
+        add: ( prevState ) => ++prevState,
+        reduce: ( prevState ) => --prevState,
+    },
+  },
+};
+```
+- Consume actions in the component: `const { state, dispatch, actions } = useSegment( 'counter' );`
+- Dispatch actions: `dispatch( actions.add );`;
+- Define actions with dynamic values: 
+```javascript
+const segments = {
+  counter: {
+    state: 0,
+    actions: {
+        add: ( number ) => ( prevState ) => prevState + number,
+        reduce: ( number ) => ( prevState ) => prevState - number,
+    },
+  },
+};
+```
+- Dispatch actions with dynamic values: `dispatch( actions.add( 3 ) );`
+- Dispatch without re-render the existing component by using `useDispatch` hook instead of the `useSegment` hook: `const { dispatch, actions } = useDispatch( 'counter' );`
+- Initializing segments groups:
+```javascript
+useInitSegments( mainSegments, 'main' );
+useInitSegments( footerSegments, 'footer' );
+```
+- Consuming a segment from group: `const { state, dispatch, actions } = useSegment( 'counter', 'main' );`
 
 Usage
 -------------

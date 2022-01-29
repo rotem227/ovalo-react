@@ -32,7 +32,12 @@ const segments = {
 - Initializing the segments data: `useInitSegments( segments );`
 - Consume a segment state data: `const { state, dispatch } = useSegment( 'counter' );`
 - Dispatch a state change: `dispatch( ( prevState ) => prevState + 1 );`
-- Dispatch an async state change: `dispatch( ( prevState ) => new Promise( ( res ) => res( prevState + 1 ) ) );`
+- Dispatch an async state change:
+```javascript
+dispatch( ( prevState ) => new Promise( ( res ) => {
+    setTimeout( () => res( prevState + 5 ), 2000 );
+} ) );
+```
 - Dispatch a sequence (gradually executed): `dispatch( [ ( prevState ) => { }, ( prevState ) => { } ] );`
 - Actions that can be executed by the dispatch function:
 ```javascript
@@ -67,7 +72,10 @@ const segments = {
 useInitSegments( mainSegments, 'main' );
 useInitSegments( footerSegments, 'footer' );
 ```
+- The state structure can be either a primitive, array or an object.
 - Consuming a segment from group: `const { state, dispatch, actions } = useSegment( 'counter', 'main' );`
+- The segments state can be exposed in the 'window' level.
+- Initializing the semgnets data can be done even before the app is loaded.
 
 Usage
 -------------
@@ -472,6 +480,40 @@ export default function Footer() {
 ```
 The footer component can affect the 'counter' state without being re-render on each dispatch, due to not consuming the state and using the `useDispatch` hook, instead of the `useSegment` hook.
 
+## State Structure
+
+The state structure can be either a primitive, array or an object.
+
+For example:
+
+```javascript
+const segments = {
+  counter: {
+    state: 0,
+    actions: {
+        add: ( prevState ) => ++prevState,
+        reduce: ( prevState ) => --prevState,
+    },
+  },
+  todos: {
+    state: [],
+    actions: {
+        addTodo: ( todo ) => ( prevState ) => [ ...prevState, todo ],
+    },
+  },
+  menu: {
+    state: {
+        isOpened: false,
+        items: [],
+    },
+    actions: {
+        toggle: ( prevState ) => ( { ...prevState, isOpened: ! prevState.isOpened } ),
+        addItem: ( newItem ) => ( prevState ) => ( { ...prevState, items: [ ...prevState.items, newItem ] } ),
+    },
+  },
+};
+```
+
 ## Groups
 
 The segments data can be configured as multiple groups that manage their state separately.
@@ -584,7 +626,7 @@ export default function Footer() {
 ```
 The state will be updated only in the `Footer` component, without affect the `Counter` component.
 
-## Exposing The Segments State To The 'Window' Level
+## Exposing The Segments State In The 'Window' Level
 
 The segments state can be exposed in the 'window' level, so that external an external source can affect the app state.
 

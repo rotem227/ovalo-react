@@ -56,7 +56,7 @@ export default function App() {
 
 ## Dispatch
 
-The dispatch function can be destructured from the `useSegment` hook, and can manipulate the state value.
+The dispatch function can be deconstructured from the `useSegment` hook, and can manipulate the state value.
 
 Example of a `Counter.jsx` component file:
 
@@ -104,8 +104,8 @@ export default function Counter() {
     <div>
       <button
         onClick={ () => dispatch( ( prevState ) => {
-            return new Promise( ( res ) => {
-                setTimeout( () => res( --prevState ), 2000 );
+            return new Promise( ( resolve ) => {
+                setTimeout( () => resolve( --prevState ), 2000 );
             } );
         } ) }
       >-</button>
@@ -114,8 +114,8 @@ export default function Counter() {
 
       <button
         onClick={ () => dispatch( ( prevState ) => {
-            return new Promise( ( res ) => {
-                setTimeout( () => res( ++prevState ), 2000 );
+            return new Promise( ( resolve ) => {
+                setTimeout( () => resolve( ++prevState ), 2000 );
             } );
         } ) }
       >+</button>
@@ -128,7 +128,9 @@ Each `<button>` click dispatches an async state update, which makes the state va
 ## Dispatch Sequence
 
 The dispatch function supports an array of multiple state updates that run in a sequence.
+
 It can be useful when a certain state update depends on a prior one to be fulfilled.
+
 For example: waiting for an API request and updating a different state only once the API request is fulfilled.
 
 Example of a `Counter.jsx` component file:
@@ -141,12 +143,12 @@ import { useSegment } from "ovalo-react";
 export default function Counter() {
   const { state, dispatch } = useSegment( 'counter' );
 
-  const action1 = ( prevState ) => new Promise( ( res ) => {
-      setTimeout( () => res( prevState - 10 ), 2000 );
+  const action1 = ( prevState ) => new Promise( ( resolve ) => {
+      setTimeout( () => resolve( prevState - 10 ), 2000 );
   } );
 
-  const action2 = ( prevState ) => new Promise( ( res ) => {
-      setTimeout( () => res( prevState - 20 ), 3000 );
+  const action2 = ( prevState ) => new Promise( ( resolve ) => {
+      setTimeout( () => resolve( prevState - 20 ), 3000 );
   } );
 
   const sequence = [ action1, action2 ];
@@ -161,8 +163,8 @@ export default function Counter() {
 
       <button
         onClick={ () => dispatch( ( prevState ) => {
-            return new Promise( ( res ) => {
-                setTimeout( () => res( ++prevState ), 2000 );
+            return new Promise( ( resolve ) => {
+                setTimeout( () => resolve( ++prevState ), 2000 );
             } );
         } ) }
       >+</button>
@@ -208,7 +210,7 @@ export default function App() {
 
 ## Dispatch Actions
 
-In order to dispatch the actions, they should be destructured from the `useSegment` hook, and should be passed as the dispatch function argument.
+In order to dispatch the actions, they should be deconstructured from the `useSegment` hook, and should be passed as the dispatch function argument.
 
 Example of a `Counter.jsx` component file:
 
@@ -242,7 +244,9 @@ By dispatching the 'counter' segment actions, the state value will be increased/
 ## Actions With Dynamic Values
 
 In some cases you might need the ability to control the actions values from outside.
+
 In this case, each action should return a function that returns an inner function.
+
 The outer function will hold the dynamic value while the inner function will hold the prevState.
 
 Example of `App.jsx` file:
@@ -327,13 +331,13 @@ const segments = {
     state: 0,
     actions: {
         add: ( number ) => ( prevState ) => {
-            return new Promise( ( res ) => {
-                setTimeout( () => res( prevState + number ), 2000 );
+            return new Promise( ( resolve ) => {
+                setTimeout( () => resolve( prevState + number ), 2000 );
             } );
         },
         reduce: ( number ) => ( prevState ) => {
-            return new Promise( ( res ) => {
-                setTimeout( () => res( prevState - number ), 1000 );
+            return new Promise( ( resolve ) => {
+                setTimeout( () => resolve( prevState - number ), 1000 );
             } );
         },
     },
@@ -461,10 +465,12 @@ export default function App() {
 }
 ```
 
-## Working With Groups
+## Working With Segments Groups
 
 By defining multiple segments groups ('main' and 'footer') each segment state will be managed separately.
 Meaning, each state update of the 'main' group counter, will not affect the 'footer' group counter.
+
+**Notice:** additional argument `'main'` was added to the `useSegment` hook: `useSegment( 'counter', 'main' )`.
 
 Example of a `Counter.jsx` component file:
 
@@ -495,6 +501,8 @@ export default function Counter() {
 ```
 The state will be updated only in the `Counter` component, without affect the `Footer` component (see below).
 
+**Notice:** additional argument `'footer'` was added to the `useSegment` hook: `useSegment( 'counter', 'footer' )`.
+
 Example of a `Footer.jsx` component file:
 
 ```javascript
@@ -523,4 +531,96 @@ export default function Footer() {
 }
 ```
 The state will be updated only in the `Footer` component, without affect the `Counter` component.
+
+## Exposing The Segments State In The 'Window' Level
+
+The segments state can be exposed in the 'window' level, so that external an external source can affect the app state.
+
+By deconstructuring `segments` from the `useInitSegments` hook, will allow to expose the state in the 'window' level.
+
+Example of `App.jsx` file:
+
+```javascript
+import React, { useEffect } from 'react';
+
+import { useInitSegments } from 'ovalo-react';
+
+import Counter from './Counter';
+
+const initialSegments = {
+  counter: {
+    state: 0,
+    actions: {
+        add: ( prevState ) => ++prevState,
+        reduce: ( prevState ) => --prevState,
+    },
+  },
+};
+
+export default function App() {
+  const { segments } = useInitSegments( initialSegments );
+
+  useEffect( () => {
+    window.segments = segments;
+  }, [] );
+
+  return (
+    <div className="App">
+      <Counter />
+    </div>
+  )
+}
+```
+
+## Working With The Global Segments State In The 'Window' Level
+
+Using the segments in the 'window' level is almost the same as using the `useSegment` hook with a few minor differences:
+
+Instead of working with the `useSegment` hook, in the window ou should be using: `segments.use`.
+
+**Noe:** Dispatching actions will be done in the exact same way as in the react environment.
+
+```javascript
+const { dispatch, actions } = segments.use( 'counter' );
+
+const { add, reduce } = actions;
+
+// Actions can be dispatched in the exact same way as in the react environment.
+dispatch( add );
+
+// After 2 seconds.
+setTimeout( () => {
+    // The state can also be changed by passing a function in the exact same way as in the react environment.
+    dispatch( ( prevState ) => prevState - 5 );
+}, 2000 );
+```
+
+Instead of the `state` value, the `segment.use` expose only the initial state value.
+
+Due to not being in a react environment (in the 'window' level), the state is not being updated automatically, and therefore there is no meaning for getting the `state` from the semgnet:
+
+```javascript
+const { initial, dispatch, actions } = segments.use( 'counter' );
+
+console.log( 'Initial state value that will not be updated on state changes: ', initial );
+```
+
+The updated state value will be consumed differently from the react environement:
+
+Deconstruct `register' and declare a function that will be triggered on each state change, and will get the current state value as its argument:
+```javascript
+const { dispatch, actions, register } = segments.use( 'counter' );
+
+const onStateChange = ( currentState ) => {
+    console.log( 'The current state value is: ', currentState );  
+};
+
+register( onStateChange ); // Registering the onStateChange function to be triggered on each state changes.
+
+dispatch( add ); // Changing the state will trigger the registered onStateChange function.
+```
+
+**For more information on how to work with the ovalo global state, outsite of the react environment, see the following documentation:**
+
+
 

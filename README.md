@@ -710,7 +710,7 @@ Instead of working with the `useSegment` hook, in the window ou should be using:
 **Note:** Dispatching actions will be done in the exact same way as in the react environment.
 
 ```javascript
-const { dispatch, actions } = segments.use( 'counter' );
+const { dispatch, actions } = window.segments.use( 'counter' );
 
 const { add, reduce } = actions;
 
@@ -726,22 +726,27 @@ setTimeout( () => {
 
 Instead of the `state` value, the `segment.use` expose only the initial state value.
 
-Due to not being in a react environment (when working in the 'window' level), the state is not being updated automatically, and therefore there is no meaning for getting the `state` from the semgnet.
+Due to not being in a react environment (when working in the 'window' level), there is no state is variable that being updated automatically.
 
-The only data that is available and related to the state is the initial value, that can also be deconstructed:
+Instead, there are 2 options to get the state data:
+- `initialState` - variable that holds the initial state value.
+- `getState` - a function that returns the current state value.
 
 ```javascript
-const { initial, dispatch, actions } = segments.use( 'counter' );
+const { initialState, getState dispatch, actions } = segments.use( 'counter' );
 
-console.log( 'Initial state value that will not be updated on state changes: ', initial );
+dispatch( ( prevState ) => ++prevState );
+
+console.log( 'Initial state value that will not be updated on state changes: ', initialState );
+console.log( 'Will return the current state value: ', getState() );
 ```
 
-In order to get the updated state value will be consumed differently from the react environement:
+In addition, it's possible to reigtsre a callback function that will be triggered on each state change, and will get the current state value as its argument:
 
-Deconstruct `register' and declare a function that will be triggered on each state change, and will get the current state value as its argument:
+**Note:** The `segments` is the global instance that was created in the `App.jsx` component above.
 
 ```javascript
-const { dispatch, actions, register } = segments.use( 'counter' );
+const { dispatch, actions, register } = window.segments.use( 'counter' );
 
 const onStateChange = ( currentState ) => {
     console.log( 'The current state value is: ', currentState );  

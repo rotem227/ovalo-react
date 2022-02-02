@@ -95,7 +95,7 @@ const segments = {
 ```javascript
 dispatch( actions.add( 3 ) );
 ```
-- Dispatch without re-render the existing component by using `useDispatch` hook instead of the `useSegment` hook:
+- Dispatch without re-rendering the existing component by using `useDispatch` hook instead of the `useSegment` hook:
 ```javascript
 const { dispatch, actions } = useDispatch( 'counter' );
 ```
@@ -115,7 +115,7 @@ const { state, dispatch, actions } = useSegment( 'counter', 'main' );
 Usage With Examples
 -------------
 
-## Initialize The Segments State
+### Initialize The Segments State
 
 The basic concept of the library is to define 'segments' data, which is basically an object that holds the app state.
 
@@ -149,7 +149,7 @@ export default function App() {
 }
 ```
 
-## Dispatch
+### Dispatch
 
 The dispatch function can be deconstructured from the `useSegment` hook, and can manipulate the state value.
 
@@ -158,7 +158,7 @@ Example of a `Counter.jsx` component file:
 ```javascript
 import React from 'react';
 
-import { useSegment } from "ovalo-react";
+import { useSegment } from 'ovalo-react';
 
 export default function Counter() {
   const { state, dispatch } = useSegment( 'counter' );
@@ -180,7 +180,7 @@ export default function Counter() {
 ```
 Each `<button>` click dispatches a state update, which makes the state value to be increased/decreased by 1.
 
-## Dispatch Async
+### Dispatch Async
 
 The dispatch function supports async state updates by passing a function that returns a Promise.
 Once the Promise is resolved, the state will be updated.
@@ -190,7 +190,7 @@ Example of a `Counter.jsx` component file:
 ```javascript
 import React from 'react';
 
-import { useSegment } from "ovalo-react";
+import { useSegment } from 'ovalo-react';
 
 export default function Counter() {
   const { state, dispatch } = useSegment( 'counter' );
@@ -220,7 +220,7 @@ export default function Counter() {
 ```
 Each `<button>` click dispatches an async state update, which makes the state value to be increased/decreased by 1 after 2 seconds.
 
-## Dispatch Sequence
+### Dispatch Sequence
 
 The dispatch function supports an array of multiple state updates that run in a sequence.
 
@@ -233,7 +233,7 @@ Example of a `Counter.jsx` component file:
 ```javascript
 import React from 'react';
 
-import { useSegment } from "ovalo-react";
+import { useSegment } from 'ovalo-react';
 
 export default function Counter() {
   const { state, dispatch } = useSegment( 'counter' );
@@ -269,7 +269,7 @@ export default function Counter() {
 ```
 When clicking the `-` button, the state will be decreased by 10 within 2 seconds, and afterward will be reduced by 20 after 3 seconds (from the moment that the previous action was fulfilled).
 
-## Actions
+### Actions
 
 In addition to the state, the 'counter' segment can also hold pre-defined actions that can manipulate the state data (the actions has the same capabilities as to whatever is passed to the dispatch function).
 
@@ -303,7 +303,7 @@ export default function App() {
 }
 ```
 
-## Dispatch Actions
+### Dispatch Actions
 
 In order to dispatch the actions, they should be deconstructured from the `useSegment` hook, and should be passed as the dispatch function argument.
 
@@ -312,7 +312,7 @@ Example of a `Counter.jsx` component file:
 ```javascript
 import React from 'react';
 
-import { useSegment } from "ovalo-react";
+import { useSegment } from 'ovalo-react';
 
 export default function Counter() {
   const { state, dispatch, actions } = useSegment( 'counter' );
@@ -336,7 +336,7 @@ export default function Counter() {
 ```
 By dispatching the 'counter' segment actions, the state value will be increased/decreased by 1.
 
-## Actions With Dynamic Values
+### Actions With Dynamic Values
 
 In some cases you might need the ability to control the actions values from outside.
 
@@ -374,7 +374,7 @@ export default function App() {
 }
 ```
 
-## Dispatch Actions With Dynamic Values
+### Dispatch Actions With Dynamic Values
 
 In this case, each action can affect the state with a different value.
 
@@ -383,7 +383,7 @@ Example of a `Counter.jsx` component file:
 ```javascript
 import React from 'react';
 
-import { useSegment } from "ovalo-react";
+import { useSegment } from 'ovalo-react';
 
 export default function Counter() {
   const { state, dispatch, actions } = useSegment( 'counter' );
@@ -407,7 +407,7 @@ export default function Counter() {
 ```
 Each click on the `+` button will increase the state value by 3, while each click on the `-` button will decrease the value by 2.
 
-## Dispatch Async Actions
+### Dispatch Async Actions
 
 In some cases, actions might need to perform an async state updates.
 The actions functions can return a Promise, that will update the state value once it's resolved.
@@ -457,7 +457,7 @@ Example of a `Counter.jsx` component file:
 ```javascript
 import React from 'react';
 
-import { useSegment } from "ovalo-react";
+import { useSegment } from 'ovalo-react';
 
 export default function Counter() {
   const { state, dispatch, actions } = useSegment( 'counter' );
@@ -481,7 +481,7 @@ export default function Counter() {
 ```
 There is no change in terms of the async actions dispatch, the state will be increased after 2 seconds and will be decreased after 1 second.
 
-## Dispatch Without Re-render The Existing Component
+### Dispatch Without Re-render The Existing Component
 
 In some cases, a certain component should just update the state without consuming it.
 
@@ -496,7 +496,7 @@ Example of an external `Footer.jsx` component file:
 ```javascript
 import React from 'react';
 
-import { useDispatch } from "ovalo-react";
+import { useDispatch } from 'ovalo-react';
 
 export default function Footer() {
   const { dispatch, actions } = useDispatch( 'counter' );
@@ -515,7 +515,7 @@ export default function Footer() {
 ```
 The footer component can affect the 'counter' state without being re-render on each dispatch, due to not consuming the state and using the `useDispatch` hook, instead of the `useSegment` hook.
 
-## State Structure
+### State Structure
 
 The state structure can be either a primitive, array or an object.
 
@@ -549,7 +549,7 @@ const segments = {
 };
 ```
 
-## Groups
+### Groups
 
 The segments data can be configured as multiple groups that manage their state separately.
 
@@ -594,7 +594,7 @@ export default function App() {
 }
 ```
 
-## Working With Segments Groups
+### Working With Segments Groups
 
 By defining multiple segments groups ('main' and 'footer') each segment state will be managed separately.
 Meaning, each state update of the 'main' group counter, will not affect the 'footer' group counter.
@@ -606,7 +606,7 @@ Example of a `Counter.jsx` component file:
 ```javascript
 import React from 'react';
 
-import { useSegment } from "ovalo-react";
+import { useSegment } from 'ovalo-react';
 
 export default function Counter() {
   const { state, dispatch } = useSegment( 'counter', 'main' );
@@ -637,7 +637,7 @@ Example of a `Footer.jsx` component file:
 ```javascript
 import React from 'react';
 
-import { useSegment } from "ovalo-react";
+import { useSegment } from 'ovalo-react';
 
 export default function Footer() {
   const { state, dispatch } = useSegment( 'counter', 'footer' );
@@ -661,7 +661,7 @@ export default function Footer() {
 ```
 The state will be updated only in the `Footer` component, without affect the `Counter` component.
 
-## Exposing The Segments State In The 'Window' Level
+### Exposing The Segments State In The 'Window' Level
 
 The segments state can be exposed in the 'window' level, so that external an external source can affect the app state.
 
@@ -701,7 +701,7 @@ export default function App() {
 }
 ```
 
-## Working With The Global Segments State In The 'Window' Level
+### Working With The Global Segments State In The 'Window' Level
 
 Using the segments in the 'window' level is almost the same as using the `useSegment` hook with a few minor differences:
 
@@ -754,7 +754,7 @@ dispatch( add ); // Changing the state will trigger the registered onStateChange
 
 **For more information on how to work with the ovalo global state, outsite of the react environment, see the following documentation:**
 
-## Initializing Segments Data Before The App Is Loaded
+### Initializing Segments Data Before The App Is Loaded
 
 The segments data can also be initialized before the app is loaded by importing `Segments` from the library.
 
